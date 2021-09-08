@@ -11,7 +11,7 @@ function getNLUInstance() {
     const { IamAuthenticator } = require('ibm-watson/auth');
 
     const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
-        version: '2020-08-01',
+        version: '2021-08-01',
         authenticator: new IamAuthenticator({
             apikey: api_key,
         }),
@@ -30,23 +30,55 @@ app.get("/",(req,res)=>{
   });
 
 app.get("/url/emotion", (req,res) => {
-
-    return res.send({"happy":"90","sad":"10"});
+    console.log("Entra URL Emotion");
+    console.log(getNLUInstance());
 });
 
 app.get("/url/sentiment", (req,res) => {
-    return res.send("url sentiment for "+req.query.url);
+    const analyzeParams = {
+        'url': req.query.url,
+        'features': {
+            'sentiment': {
+              'targets': [
+                'Juan', 'negative', 'positive', 'is'
+              ]
+            }
+          }
+      };
+      getNLUInstance().analyze(analyzeParams).then(analysisResults => {
+        return res.send(JSON.stringify(analysisResults.result));
+        
+      })
+      .catch(err => {
+        console.log('error:', err);
+      });
 });
 
 app.get("/text/emotion", (req,res) => {
-    return res.send({"happy":"10","sad":"90"});
+    console.log("Entra Text Emotion");
+    console.log(getNLUInstance());
 });
 
 app.get("/text/sentiment", (req,res) => {
-    return res.send("text sentiment for "+req.query.text);
+    const analyzeParams = {
+        'text': req.query.text,
+        'features': {
+            'sentiment': {
+              'targets': [
+                'Juan'
+              ]
+            }
+          }
+      };
+      getNLUInstance().analyze(analyzeParams).then(analysisResults => {
+        return res.send(JSON.stringify(analysisResults.result));
+        
+      })
+      .catch(err => {
+        console.log('error:', err);
+      });
 });
 
 let server = app.listen(8080, () => {
     console.log('Listening', server.address().port)
-})
-
+});

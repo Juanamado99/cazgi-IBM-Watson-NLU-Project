@@ -36,7 +36,7 @@ class App extends React.Component {
   sendForSentimentAnalysis = () => {
     this.setState({sentiment:true});
     let ret = "";
-    let url = ".";
+    let url = "http://localhost:8080";
 
     if(this.state.mode === "url") {
       url = url+"/url/sentiment?url="+document.getElementById("textinput").value;
@@ -46,16 +46,17 @@ class App extends React.Component {
     ret = axios.get(url);
     ret.then((response)=>{
 
+      console.log(response.data.sentiment.document.label);
       //Include code here to check the sentiment and fomrat the data accordingly
 
-      this.setState({sentimentOutput:response.data});
+      this.setState({sentimentOutput:response.data.sentiment.document.label});
       let output = response.data;
-      if(response.data === "positive") {
-        output = <div style={{color:"green",fontSize:20}}>{response.data}</div>
-      } else if (response.data === "negative"){
-        output = <div style={{color:"red",fontSize:20}}>{response.data}</div>
+      if(response.data.sentiment.document.label === "positive") {
+        output = <div style={{color:"green",fontSize:20}}>{response.data.sentiment.document.label}</div>
+      } else if (response.data.sentiment.document.label === "negative"){
+        output = <div style={{color:"red",fontSize:20}}>{response.data.sentiment.document.label}</div>
       } else {
-        output = <div style={{color:"orange",fontSize:20}}>{response.data}</div>
+        output = <div style={{color:"orange",fontSize:20}}>{response.data.sentiment.document.label}</div>
       }
       this.setState({sentimentOutput:output});
     });
@@ -64,7 +65,7 @@ class App extends React.Component {
   sendForEmotionAnalysis = () => {
     this.setState({sentiment:false});
     let ret = "";
-    let url = ".";
+    let url = "http://localhost:8080";
     if(this.state.mode === "url") {
       url = url+"/url/emotion?url="+document.getElementById("textinput").value;
     } else {
@@ -89,7 +90,7 @@ class App extends React.Component {
         <button className="btn-primary" onClick={this.sendForSentimentAnalysis}>Analyze Sentiment</button>
         <button className="btn-primary" onClick={this.sendForEmotionAnalysis}>Analyze Emotion</button>
         <br/>
-            {this.state.sentimentOutput}
+          {this.state.sentimentOutput}
       </div>
     );
     }
